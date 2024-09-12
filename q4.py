@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from math import comb
-
+import pandas as pd
 def func(M , c) : 
     sum = 0
     for i in range(M+1,2*M + 2) :
@@ -9,10 +9,10 @@ def func(M , c) :
 
     return sum
 
-
+print(func(6,0.3))
 
 clist = [round((0.05 + 0.01*i),2) for i in range ( 0 ,21)]
-
+data = pd.DataFrame()
 for c in clist :
     mlist = [ i for i in range(0,20)]
     funclist = [func(m,c) for m in mlist]
@@ -21,6 +21,8 @@ for c in clist :
     if funclist[closest_index_7] - 0.75 < 0 and closest_index_7 < 19 : closest_index_7+=1
     closest_index_9 = min(range(len(funclist)), key=lambda i: abs(funclist[i] - 0.9))
     if funclist[closest_index_9] - 0.9 < 0  and closest_index_9 < 19 : closest_index_9+=1
+
+    
     plt.scatter(mlist,funclist)
     plt.xlabel("M values")
     plt.ylabel("P(Fair Decision)")
@@ -38,5 +40,12 @@ for c in clist :
     plt.title(f'c = {c}')
     plt.savefig(f"c= {c}.jpeg",format ='jpeg')
     plt.clf()
+    data.at[f'{c}',"N for P(fair decision)>0.75"] = 2*mlist[closest_index_7]+1
+    data.at[f'{c}',"N for P(fair decision)>0.90"] = 2*mlist[closest_index_9]+1
+    data.at[f'{c}' , "Cost for P > 0.75"] = 1000*c*c + 2*mlist[closest_index_7]+1
+    data.at[f'{c}' , "Cost for P > 0.90"] = 1000*c*c + 2*mlist[closest_index_9]+1
+
+data.to_excel("Metric.xlsx")
+
 
 
